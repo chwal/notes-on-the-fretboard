@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Learn Notes</title>
+    <style media="screen">
+        body {
+          background-color: black;
+          font-weight: bold;
+          color: #919191;
+          font-size: 15pt;
+        }
+
+        .bigText {
+          vertical-allign: center;
+          padding: 20px 0;
+          font-size: 180pt;
+        }
+
+        .bigTextInvisibleRed {
+          color: black;
+        }
+
+        .bigTextInvisibleRed:hover {
+          color: #f99;
+        }
+
+        .bigTextInvisibleWhite {
+          color: black;
+        }
+
+        .bigTextInvisibleWhite:hover {
+          color: white;
+        }
+
+        .center {
+          text-align: center;
+        }
+
+        .slider {
+          margin-top: 15px;
+          -webkit-appearance: none;
+          width: 100%;
+          height: 10px;
+          border-radius: 5px;
+          background: #30302f;
+          outline: none;
+          opacity: 0.7;
+          -webkit-transition: .2s;
+          transition: opacity .2s;
+        }
+
+        .slider::-webkit-slider-thumb {
+          -webkit-appearance: none;
+          appearance: none;
+          width: 25px;
+          height: 25px;
+          border-radius: 50%;
+          background: white;
+          cursor: pointer;
+        }
+
+        .slider::-moz-range-thumb {
+          width: 25px;
+          height: 25px;
+          border-radius: 50%;
+          background: white;
+          cursor: pointer;
+        }
+
+        .radioButtonForm {
+          margin-top: 30px;
+          color: #4f4f4f;
+          font-size: 20pt;
+        }
+
+        #sliderValue::before {
+          content: "Random note will change every ";
+        }
+
+        #sliderValue::after {
+          content: " seconds";
+        }
+
+        .slidecontainer {
+          width: 40%;
+          margin: 0 auto;
+        }
+
+    </style>
+  </head>
+  <body>
+    <p class="center">Choose your gutiar string to learn</p>
+    <form class="radioButtonForm center" id="formId">
+      E <input type="radio" name="guitarString" onclick="window.guitarString = 'E';" checked>
+      A <input type="radio" name="guitarString" onclick="window.guitarString = 'A';">
+      D <input type="radio" name="guitarString" onclick="window.guitarString = 'D';">
+      G <input type="radio" name="guitarString" onclick="window.guitarString = 'G';">
+      B <input type="radio" name="guitarString" onclick="window.guitarString = 'B';">
+      <!-- All <input type="radio" name="guitarString" onclick="if(this.checked){window.guitarString = 'notImplemented()'}"> -->
+    </form>
+
+    <div id="noteElement" class="center bigText"></div>
+
+    <p id="sliderValue" class="center"></p>
+
+    <div class="slidecontainer">
+      <input type="range" min="1" max="100" value="1" class="slider" id="sliderElement">
+    </div>
+
+    <script>
+      window.guitarString = 'E';
+      var slider = document.getElementById("sliderElement");
+      var form = document.getElementById("formId");
+      var output = document.getElementById("sliderValue");
+      initializeSldier();
+      var allNotesMap = initializeNotes();
+
+      var intervalInSeconds = output;
+      var myVar = setInterval(modifyElement, slider.value * 1000);
+
+      slider.addEventListener('change', function(e) {
+        clearInterval(myVar);
+        myVar = setInterval(modifyElement, slider.value * 1000);
+      });
+
+      function modifyElement() {
+        console.log(window.guitarString);
+        let randomItem = getRandomNoteFromString(allNotesMap,window.guitarString);
+        let randomNote = randomItem[0];
+        let randomFret = randomItem[1];
+        let coloredFretNumber;
+
+        if(randomFret == 3 ||
+          randomFret == 5 ||
+          randomFret == 7 ||
+          randomFret == 9 ||
+          randomFret == 12) {
+          coloredFretNumber = '<div class="bigTextInvisibleRed">' + randomFret + '<div>'
+        } else {
+          coloredFretNumber = '<div class="bigTextInvisibleWhite">' + randomFret + '<div>'
+        }
+
+        document.getElementById("noteElement").innerHTML = randomNote + coloredFretNumber;
+      }
+
+      function getRandomKey(collection) {
+        let keys = Array.from(collection.keys());
+        return keys[Math.floor(Math.random() * keys.length)];
+      }
+
+      function getRandomNoteFromString(collection,key) {
+          let items = Array.from(collection.get(key));
+          var random = Math.random();
+          var index = Math.floor(random * items.length);
+          return items[index];
+      }
+
+      function initializeSldier() {
+        // Display the default slider value
+        output.innerHTML = slider.value;
+
+        // Update the current slider value (each time you drag the slider handle)
+        slider.oninput = function() {
+          output.innerHTML = this.value;
+        }
+      }
+
+      // Don't wait for first interval
+      modifyElement();
+
+      function initializeNotes() {
+        var allNotesMap = new Map();
+        allNotesMap.set('E', [
+          ['A', 5],
+          ['B', 7],
+          ['C', 8],
+          ['D', 10],
+          ['E', 12],
+          ['F', 1],
+          ['G', 3]
+        ]);
+
+        allNotesMap.set('A', [
+          ['A', 12],
+          ['B', 2],
+          ['C', 3],
+          ['D', 5],
+          ['E', 7],
+          ['F', 8],
+          ['G', 10]
+        ]);
+
+        allNotesMap.set('D', [
+          ['A', 7],
+          ['B', 9],
+          ['C', 10],
+          ['D', 12],
+          ['E', 2],
+          ['F', 3],
+          ['G', 5]
+        ]);
+
+        allNotesMap.set('G', [
+          ['A', 2],
+          ['B', 4],
+          ['C', 5],
+          ['D', 7],
+          ['E', 9],
+          ['F', 10],
+          ['G', 12]
+        ]);
+
+        allNotesMap.set('B', [
+          ['A', 10],
+          ['B', 12],
+          ['C', 1],
+          ['D', 3],
+          ['E', 5],
+          ['F', 6],
+          ['G', 8]
+        ]);
+
+        allNotesMap.set('e', [
+          ['A', 5],
+          ['B', 7],
+          ['C', 8],
+          ['D', 10],
+          ['E', 12],
+          ['F', 1],
+          ['G', 3]
+        ]);
+
+        return allNotesMap;
+      }
+    </script>
+  </body>
+</html>
